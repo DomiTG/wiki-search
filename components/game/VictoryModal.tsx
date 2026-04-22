@@ -1,6 +1,7 @@
 'use client';
 
-import { Trophy, Clock, MousePointer, Route, Copy, RotateCcw, Home } from 'lucide-react';
+import { useState } from 'react';
+import { Trophy, Clock, MousePointer, Route, Copy, Check, RotateCcw, Home } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { formatTime } from '@/lib/game-logic';
@@ -21,7 +22,10 @@ export function VictoryModal({
   onPlayAgain,
   onReturnHome,
 }: VictoryModalProps) {
-  const copyResult = () => {
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+
+  const copyResult = async () => {
     const result = [
       `🏆 WikiRace Result`,
       `📍 ${decodeURIComponent(state.startArticle).replace(/_/g, ' ')} → ${decodeURIComponent(state.targetArticle).replace(/_/g, ' ')}`,
@@ -30,7 +34,15 @@ export function VictoryModal({
       `🗺️ Path (${state.path.length} pages):`,
       state.path.map((p, i) => `  ${i + 1}. ${decodeURIComponent(p).replace(/_/g, ' ')}`).join('\n'),
     ].join('\n');
-    navigator.clipboard.writeText(result);
+    try {
+      await navigator.clipboard.writeText(result);
+      setCopied(true);
+      setCopyError(false);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopyError(true);
+      setTimeout(() => setCopyError(false), 3000);
+    }
   };
 
   return (
@@ -78,10 +90,15 @@ export function VictoryModal({
             <Button
               onClick={copyResult}
               variant="outline"
-              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              className={`border-slate-700 hover:bg-slate-800 ${copyError ? 'border-red-500/50 text-red-400' : copied ? 'border-green-500/50 text-green-400' : 'text-slate-300'}`}
             >
-              <Copy className="w-4 h-4 mr-2" />
-              Copy Result
+              {copied ? (
+                <><Check className="w-4 h-4 mr-2" />Copied!</>
+              ) : copyError ? (
+                <><Copy className="w-4 h-4 mr-2" />Copy failed</>
+              ) : (
+                <><Copy className="w-4 h-4 mr-2" />Copy Result</>
+              )}
             </Button>
             <Button onClick={onPlayAgain} className="bg-violet-600 hover:bg-violet-700 text-white">
               <RotateCcw className="w-4 h-4 mr-2" />

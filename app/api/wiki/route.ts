@@ -11,7 +11,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing title parameter' }, { status: 400 });
   }
 
-  const safeTitle = decodeURIComponent(title).replace(/[<>"]/g, '').substring(0, 200);
+  // Sanitize title: allow only valid Wikipedia article characters
+  const safeTitle = decodeURIComponent(title)
+    .replace(/[<>"'&]/g, '')
+    .replace(/[^\w\s\-.()',/]/g, '')
+    .substring(0, 200)
+    .trim();
 
   if (action === 'search') {
     const params = new URLSearchParams({

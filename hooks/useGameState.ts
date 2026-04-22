@@ -36,6 +36,11 @@ export function useGameState(settings: GameSettings) {
   }, [settings]);
 
   useEffect(() => {
+    // Clear any existing interval before creating a new one
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     if (state.status === 'playing') {
       timerRef.current = setInterval(() => {
         setState((prev) => {
@@ -51,7 +56,10 @@ export function useGameState(settings: GameSettings) {
       }, 1000);
     }
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, [state.status, state.startTime]);
 
