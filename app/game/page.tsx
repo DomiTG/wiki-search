@@ -72,7 +72,7 @@ function GameContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col" style={{ userSelect: 'none' }}>
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
       <SearchWarning show={showWarning} />
 
       <header className="border-b border-slate-800/60 bg-slate-950/90 backdrop-blur-sm sticky top-0 z-40">
